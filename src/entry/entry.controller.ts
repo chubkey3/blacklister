@@ -16,4 +16,9 @@ export class EntryController {
   async create(@Body() userData: { phoneNumber: string }): Promise<Entry | null> {
     return this.entryService.addOne(userData.phoneNumber);
   }
+
+  @Post('csv')
+  async createFromCSV(@Body() userData: { url: string }) {
+    return this.entryService.addFromCSV(userData.url);
+  }
 }
