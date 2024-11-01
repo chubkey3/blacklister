@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 
 import { Entry } from './entry.entity';
 import { toE164 } from 'src/util/e164';
-import { error } from 'console';
 
 @Injectable()
 export class EntryService {
@@ -20,8 +19,16 @@ export class EntryService {
   }
 
   // adds one blacklist entry to db with specified phone number
-  addOne(phoneNumber: string): Promise<Entry> {
-    const entry = this.entryRepository.create({ phoneNumber: toE164(phoneNumber)});
+  async addOne(phoneNumber: string): Promise<Entry | null> {
+    const parsedPhoneNumber = toE164(phoneNumber);
+
+    const existingRecord = await this.entryRepository.findOne({ where: {phoneNumber: parsedPhoneNumber}});
+
+    if (existingRecord) {
+        return null;
+    }
+
+    const entry = this.entryRepository.create({ phoneNumber: parsedPhoneNumber});
     return this.entryRepository.save(entry);
   }
 
