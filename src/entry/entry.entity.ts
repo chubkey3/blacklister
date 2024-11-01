@@ -1,8 +1,7 @@
-
 import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
-@Unique(["phoneNumber"])
+@Unique(['phoneNumber'])
 export class Entry {
   @PrimaryGeneratedColumn()
   id: number;
@@ -10,6 +9,6 @@ export class Entry {
   @Column()
   phoneNumber: string; // E.164 format
 
-  @Column({ default: new Date()})
-  dateAdded: Date;  
+  @Column({ default: new Date() })
+  dateAdded: Date;
 }

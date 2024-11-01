@@ -5,21 +5,20 @@
  * @return {string} The result of converting phoneNumber to E.164
  */
 export function toE164(phoneNumber: string) {
+  // already in E.164 format
+  if (phoneNumber.startsWith('+')) {
+    return phoneNumber;
+  }
 
-    // already in E.164 format
-    if (phoneNumber.startsWith('+')) {
-        return phoneNumber;
-    }
+  // parse phone number into just number (no spaces, dashes, or parenthesis)
+  const phoneNumberRaw = phoneNumber.replaceAll(/[ \-\(\)\.]/g, '');
 
-    // parse phone number into just number (no spaces, dashes, or parenthesis)
-    let phoneNumberRaw = phoneNumber.replaceAll(/[ \-\(\)\.]/g, '');
-    
-    // if no country code
-    if (phoneNumberRaw.length == 10) {
-        return `+1${phoneNumberRaw}`
-    } else {
-        return `+${phoneNumberRaw}`
-    }
+  // if no country code
+  if (phoneNumberRaw.length == 10) {
+    return `+1${phoneNumberRaw}`;
+  } else {
+    return `+${phoneNumberRaw}`;
+  }
 }
 
 // test ASAP

@@ -13,7 +13,9 @@ export class EntryController {
   }
 
   @Post()
-  async create(@Body() userData: { phoneNumber: string }): Promise<Entry | null> {
+  async create(
+    @Body() userData: { phoneNumber: string },
+  ): Promise<Entry | null> {
     return this.entryService.addOne(userData.phoneNumber);
   }
 
