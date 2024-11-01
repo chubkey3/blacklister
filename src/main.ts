@@ -7,14 +7,16 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Blacklister')
-    .setDescription('Documentation on Blacklister API to manage blacklisted phone numbers')
+    .setDescription(
+      'Documentation on Blacklister API to manage blacklisted phone numbers',
+    )
     .setVersion('1.0')
     .addTag('blacklister')
-    .build()
-  
+    .build();
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
-  
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

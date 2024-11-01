@@ -17,15 +17,15 @@ export class EntryService {
     return this.entryRepository.find();
   }
 
-  async exists(phoneNumber: string): Promise<boolean> {    
+  async exists(phoneNumber: string): Promise<boolean> {
     const parsedPhoneNumber = toE164(phoneNumber);
 
     const existingRecord = await this.entryRepository.findOne({
-        where: { phoneNumber: parsedPhoneNumber },
-      });
+      where: { phoneNumber: parsedPhoneNumber },
+    });
 
     if (existingRecord) {
-        return true;
+      return true;
     }
 
     return false;
@@ -47,9 +47,9 @@ export class EntryService {
     const existingRecord = await this.entryRepository.findOne({
       where: { phoneNumber: parsedPhoneNumber },
     });
-    
+
     if (existingRecord) {
-        return this.entryRepository.remove(existingRecord);      
+      return this.entryRepository.remove(existingRecord);
     }
   }
 
@@ -62,15 +62,15 @@ export class EntryService {
 
         for (let i = 0; i < phoneNumbers.length; i++) {
           if (phoneNumbers[i].length > 0) {
-            let exists = await this.exists(phoneNumbers[i]);
+            const exists = await this.exists(phoneNumbers[i]);
             if (!exists) {
-                this.addOne(phoneNumbers[i]);
-            }            
+              this.addOne(phoneNumbers[i]);
+            }
           }
         }
       })
       .catch(() => {
-        throw new Error('Failed to fetch resource!')
+        throw new Error('Failed to fetch resource!');
       });
   }
 }
