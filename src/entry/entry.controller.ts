@@ -6,26 +6,24 @@ import {
   Delete,
   ConflictException,
   InternalServerErrorException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { Entry } from './entry.entity';
 import { EntryService } from './entry.service';
 import {
   ApiBody,
-  ApiOperation,
-  ApiProperty,
+  ApiOperation,  
   ApiResponse,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CSVResponse } from 'src/types/CSVResponse';
+import { CreateDeleteEntryDto } from 'src/types/CreateDeleteEntryDto';
+import { FromCSVEntryDto } from 'src/types/FromCSVEntryDto';
+import { FromCSVEntryFileDto } from 'src/types/FromCSVEntryFileDto';
 
-class CreateDeleteEntryDto {
-  @ApiProperty()
-  phoneNumber: string;
-}
-
-class FromCSVEntryDto {
-  @ApiProperty()
-  url: string;
-}
 
 @Controller('blacklist')
 export class EntryController {
@@ -102,21 +100,52 @@ export class EntryController {
     }
   }
 
-  @Post('csv')
+  @Post('csv/url')
   @ApiOperation({
     summary: 'Blacklists batch of phone numbers',
     description:
-      'Blacklists collection of phone numbers found in given csv file',
+      'Blacklists collection of phone numbers found in given csv file URL',
   })
   @ApiBody({ type: FromCSVEntryDto })
   @ApiResponse({
     status: 200,
     description: 'Successfully blacklisted phone numbers!',
   })
+  @ApiResponse({ status: 400, description: 'URL provided is not a valid csv file!'})
   @ApiResponse({ status: 500, description: 'Internal Server Error!' })
-  async createFromCSV(@Body() userData: FromCSVEntryDto) {
+  async createFromCSV(@Body() userData: FromCSVEntryDto): Promise<CSVResponse> {
     try {
-      return this.entryService.addFromCSV(userData.url);
+      return this.entryService.addFromCSVURL(userData.url);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  @Post('csv/file')
+  @UseInterceptors(FileInterceptor('csv'))
+  @ApiOperation({
+    summary: 'Blacklists batch of phone numbers',
+    description:
+      'Blacklists collection of phone numbers found in given csv file',
+  })
+  @ApiBody({schema: {
+    type: 'object',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary'
+      }
+    }
+  }})
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully blacklisted phone numbers!',
+  })
+  @ApiResponse({ status: 400, description: 'CSV file provided is not a valid!'})
+  @ApiResponse({ status: 500, description: 'Internal Server Error!' })
+  async createFromCSVFile(@UploadedFile() file: Express.Multer.File): Promise<CSVResponse> {
+    try {
+      return this.entryService.addFromCSVFile(file);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
