@@ -8,22 +8,16 @@ import {
   InternalServerErrorException,
   UseInterceptors,
   UploadedFile,
-  BadRequestException,
 } from '@nestjs/common';
 
 import { Entry } from './entry.entity';
 import { EntryService } from './entry.service';
-import {
-  ApiBody,
-  ApiOperation,  
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CSVResponse } from 'src/types/CSVResponse';
 import { CreateDeleteEntryDto } from 'src/types/CreateDeleteEntryDto';
 import { FromCSVEntryDto } from 'src/types/FromCSVEntryDto';
 import { FromCSVEntryFileDto } from 'src/types/FromCSVEntryFileDto';
-
 
 @Controller('blacklist')
 export class EntryController {
@@ -111,7 +105,10 @@ export class EntryController {
     status: 200,
     description: 'Successfully blacklisted phone numbers!',
   })
-  @ApiResponse({ status: 400, description: 'URL provided is not a valid csv file!'})
+  @ApiResponse({
+    status: 400,
+    description: 'URL provided is not a valid csv file!',
+  })
   @ApiResponse({ status: 500, description: 'Internal Server Error!' })
   async createFromCSV(@Body() userData: FromCSVEntryDto): Promise<CSVResponse> {
     try {
@@ -128,22 +125,19 @@ export class EntryController {
     description:
       'Blacklists collection of phone numbers found in given csv file',
   })
-  @ApiBody({schema: {
-    type: 'object',
-    properties: {
-      file: {
-        type: 'string',
-        format: 'binary'
-      }
-    }
-  }})
+  @ApiBody({ type: FromCSVEntryFileDto })
   @ApiResponse({
     status: 200,
     description: 'Successfully blacklisted phone numbers!',
   })
-  @ApiResponse({ status: 400, description: 'CSV file provided is not a valid!'})
+  @ApiResponse({
+    status: 400,
+    description: 'CSV file provided is not a valid!',
+  })
   @ApiResponse({ status: 500, description: 'Internal Server Error!' })
-  async createFromCSVFile(@UploadedFile() file: Express.Multer.File): Promise<CSVResponse> {
+  async createFromCSVFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<CSVResponse> {
     try {
       return this.entryService.addFromCSVFile(file);
     } catch (error) {

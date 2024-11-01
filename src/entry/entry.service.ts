@@ -6,7 +6,6 @@ import { Entry } from './entry.entity';
 import { toE164 } from 'src/util/e164';
 import { CSVResponse } from 'src/types/CSVResponse';
 
-
 @Injectable()
 export class EntryService {
   constructor(
@@ -59,49 +58,41 @@ export class EntryService {
 
   async addFromCSVURL(url: string): Promise<CSVResponse> {
     try {
-      let response = await fetch(url);
+      const response = await fetch(url);
       const content = await response.text();
       return this.addFromCSV(content);
     } catch (error) {
       throw new BadRequestException(error);
     }
-    
-
   }
 
   async addFromCSVFile(file: Express.Multer.File): Promise<CSVResponse> {
     try {
-      let content = file.buffer.toString('utf-8');
+      const content = file.buffer.toString('utf-8');
 
       return this.addFromCSV(content);
     } catch (error) {
       throw new BadRequestException(error);
     }
-    
-    
-    
   }
-  
+
   // adds all phone numbers listed in csv file pointed to by URL to db
   async addFromCSV(csvString: string): Promise<CSVResponse> {
-    
-        let entriesAdded = 0;
-        let numEntries = await this.entryRepository.count();
-        
-        const phoneNumbers = csvString.split('\n');
+    let entriesAdded = 0;
+    const numEntries = await this.entryRepository.count();
 
-        for (let i = 0; i < phoneNumbers.length; i++) {
-          if (phoneNumbers[i].length > 0) {
-            const exists = await this.exists(phoneNumbers[i]);
-            if (!exists) {
-              this.addOne(phoneNumbers[i]);
-              entriesAdded = entriesAdded + 1;
-            }
-          }
-        }          
-        
-        return { status: 200, entriesAdded: entriesAdded, numEntries: numEntries}
+    const phoneNumbers = csvString.split('\n');
+
+    for (let i = 0; i < phoneNumbers.length; i++) {
+      if (phoneNumbers[i].length > 0) {
+        const exists = await this.exists(phoneNumbers[i]);
+        if (!exists) {
+          this.addOne(phoneNumbers[i]);
+          entriesAdded = entriesAdded + 1;
+        }
+      }
+    }
+
+    return { status: 200, entriesAdded: entriesAdded, numEntries: numEntries };
   }
-
-  
 }
