@@ -32,6 +32,23 @@ export class EntryService {
     return this.entryRepository.save(entry);
   }
 
+  async removeOne(phoneNumber: string): Promise<boolean> {
+    const parsedPhoneNumber = toE164(phoneNumber);
+
+    const existingRecord = await this.entryRepository.findOne({ where: {phoneNumber: parsedPhoneNumber}});
+
+    if (existingRecord) {
+        this.entryRepository.remove(existingRecord);
+
+        return true;
+    } else {
+        return false;
+    }   
+    
+
+    
+  }
+
   // adds all phone numbers listed in csv file pointed to by URL to db
   addFromCSV(url: string) {
     fetch(url).then(async (res) => {

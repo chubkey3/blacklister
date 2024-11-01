@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 
 import { Entry } from './entry.entity';
 import { EntryService } from './entry.service';
@@ -15,6 +15,11 @@ export class EntryController {
   @Post()
   async create(@Body() userData: { phoneNumber: string }): Promise<Entry | null> {
     return this.entryService.addOne(userData.phoneNumber);
+  }
+
+  @Delete()
+  async delete(@Body() userData: { phoneNumber: string }): Promise<boolean> {
+    return this.entryService.removeOne(userData.phoneNumber);
   }
 
   @Post('csv')
