@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Entry } from './entry.entity';
-import { toE164 } from 'src/util/e164';
+import { toE164 } from '../util/e164';
 import { CSVResponse } from 'src/types/CSVResponse';
 
 @Injectable()
@@ -40,6 +40,7 @@ export class EntryService {
     const entry = this.entryRepository.create({
       phoneNumber: parsedPhoneNumber,
     });
+
     return this.entryRepository.save(entry);
   }
 
@@ -56,16 +57,19 @@ export class EntryService {
     }
   }
 
+  // adds entries to database from csv url
   async addFromCSVURL(url: string): Promise<CSVResponse> {
     try {
       const response = await fetch(url);
       const content = await response.text();
+
       return this.addFromCSV(content);
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
+  // adds entries to database from csv file
   async addFromCSVFile(file: Express.Multer.File): Promise<CSVResponse> {
     try {
       const content = file.buffer.toString('utf-8');
@@ -86,6 +90,7 @@ export class EntryService {
     for (let i = 0; i < phoneNumbers.length; i++) {
       if (phoneNumbers[i].length > 0) {
         const exists = await this.exists(phoneNumbers[i]);
+
         if (!exists) {
           this.addOne(phoneNumbers[i]);
           entriesAdded = entriesAdded + 1;

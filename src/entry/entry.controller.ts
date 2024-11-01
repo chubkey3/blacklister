@@ -14,10 +14,10 @@ import { Entry } from './entry.entity';
 import { EntryService } from './entry.service';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CSVResponse } from 'src/types/CSVResponse';
-import { CreateDeleteEntryDto } from 'src/types/CreateDeleteEntryDto';
-import { FromCSVEntryDto } from 'src/types/FromCSVEntryDto';
-import { FromCSVEntryFileDto } from 'src/types/FromCSVEntryFileDto';
+import { CSVResponse } from '../types/CSVResponse';
+import { CreateDeleteEntryDto } from '../types/CreateDeleteEntryDto';
+import { FromCSVEntryDto } from '../types/FromCSVEntryDto';
+import { FromCSVEntryFileDto } from '../types/FromCSVEntryFileDto';
 
 @Controller('blacklist')
 export class EntryController {

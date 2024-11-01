@@ -11,11 +11,11 @@ import { EntryModule } from './entry/entry.module';
 import 'dotenv/config';
 
 // database fields
-const host = process.env.DB_HOST || '';
+const host = process.env.DB_HOST || 'localhost';
 const port = parseInt(process.env.DB_PORT || '5432');
-const username = process.env.DB_USERNAME || '';
-const password = process.env.DB_PASSWORD || '';
-const database = process.env.DB_DATABASE || '';
+const username = process.env.DB_USERNAME || 'postgres';
+const password = process.env.DB_PASSWORD || 'password';
+const database = process.env.DB_DATABASE || 'blacklister';
 
 @Module({
   imports: [
