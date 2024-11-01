@@ -17,17 +17,23 @@ export class EntryService {
     return this.entryRepository.find();
   }
 
-  // adds one blacklist entry to db with specified phone number
-  async addOne(phoneNumber: string): Promise<Entry | null> {
+  async exists(phoneNumber: string): Promise<boolean> {    
     const parsedPhoneNumber = toE164(phoneNumber);
 
     const existingRecord = await this.entryRepository.findOne({
-      where: { phoneNumber: parsedPhoneNumber },
-    });
+        where: { phoneNumber: parsedPhoneNumber },
+      });
 
     if (existingRecord) {
-      return null;
+        return true;
     }
+
+    return false;
+  }
+
+  // adds one blacklist entry to db with specified phone number
+  async addOne(phoneNumber: string): Promise<Entry> {
+    const parsedPhoneNumber = toE164(phoneNumber);
 
     const entry = this.entryRepository.create({
       phoneNumber: parsedPhoneNumber,
@@ -35,19 +41,15 @@ export class EntryService {
     return this.entryRepository.save(entry);
   }
 
-  async removeOne(phoneNumber: string): Promise<boolean> {
+  async removeOne(phoneNumber: string): Promise<Entry | void> {
     const parsedPhoneNumber = toE164(phoneNumber);
 
     const existingRecord = await this.entryRepository.findOne({
       where: { phoneNumber: parsedPhoneNumber },
     });
-
+    
     if (existingRecord) {
-      this.entryRepository.remove(existingRecord);
-
-      return true;
-    } else {
-      return false;
+        return this.entryRepository.remove(existingRecord);      
     }
   }
 
@@ -60,12 +62,15 @@ export class EntryService {
 
         for (let i = 0; i < phoneNumbers.length; i++) {
           if (phoneNumbers[i].length > 0) {
-            this.addOne(phoneNumbers[i]);
+            let exists = await this.exists(phoneNumbers[i]);
+            if (!exists) {
+                this.addOne(phoneNumbers[i]);
+            }            
           }
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        throw new Error('Failed to fetch resource!')
       });
   }
 }
